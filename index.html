@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#fc8019">
+    <title>Flavorsome - Order Delicious Food</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-orange: #fc8019;
+            --dark-blue: #282c3f;
+            --light-gray: #f8f8f8;
+            --white: #ffffff;
+            --text-dark: #333333;
+            --text-light: #686b78;
+            --border-color: #e9e9eb;
+            --success: #60b246;
+            --overlay-bg: rgba(0, 0, 0, 0.85);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            background-color: var(--light-gray);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* iOS Safari 100vh fix */
+        @supports (-webkit-touch-callout: none) {
+            body {
+                height: -webkit-fill-available;
+            }
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark-blue);
+        }
+
+        .logo i {
+            color: var(--primary-orange);
+        }
+
+        .cart-icon {
+            position: relative;
+            font-size: 1.5rem;
+            color: var(--dark-blue);
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--primary-orange);
+            color: var(--white);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* Search & Navigation */
+        .search-nav-container {
+            background-color: var(--white);
+            padding: 15px 5%;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-container {
+            display: flex;
+            margin-bottom: 20px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px 0 0 8px;
+            font-size: 16px; /* Prevent zoom on iOS */
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .search-button {
+            background-color: var(--primary-orange);
+            color: var(--white);
+            border: none;
+            padding: 0 20px;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            font-size: 1rem;
+            -webkit-appearance: none;
+        }
+
+        .categories {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding: 10px 0;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .categories::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 70px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px;
+            border-radius: 5px;
+            flex-shrink: 0;
+        }
+
+        .category.active {
+            color: var(--primary-orange);
+            border-bottom: 2px solid var(--primary-orange);
+        }
+
+        .category i {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .category span {
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        /* Hero Banner */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                        url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 50vh;
+            max-height: 400px;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--white);
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            max-width: 600px;
+        }
+
+        /* Menu Section */
+        .menu-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 5%;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--dark-blue);
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-orange);
+            display: inline-block;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 25px;
+        }
+
+        .menu-item {
+            background-color: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .item-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .item-details {
+            padding: 15px;
+        }
+
+        .item-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark-blue);
+        }
+
+        .item-description {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .item-price {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark-blue);
+        }
+
+        .add-to-cart {
+            background-color: var(--primary-orange);
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            font-size: 1rem;
+            -webkit-appearance: none;
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        .add-to-cart:active {
+            background-color: #e67300;
+            transform: scale(0.98);
+        }
+
+        /* Full Screen Cart */
+        .cart-fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--white);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .cart-fullscreen.active {
+            transform: translateY(0);
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .cart-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark-blue);
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            padding: 8px;
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        .cart-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 0 5%;
+        }
+
+        .cart-items-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .cart-item {
+            display: flex;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            background-color: var(--light-gray);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .cart-item-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 15px;
+        }
+
+        .cart-item-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        .cart-item-price {
+            color: var(--text-light);
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background-color: var(--white);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2rem;
+            -webkit-appearance: none;
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        .quantity-btn:active {
+            background-color: var(--primary-orange);
+            color: var(--white);
+        }
+
+        .cart-item-quantity {
+            font-weight: 600;
+            min-width: 30px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .remove-item {
+            color: var(--primary-orange);
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-left: auto;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 8px;
+            min-height: 44px;
+        }
+
+        .cart-footer {
+            padding: 20px 0;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--white);
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .place-order-btn {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--success);
+            color: var(--white);
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            -webkit-appearance: none;
+            min-height: 44px;
+        }
+
+        .place-order-btn:active {
+            background-color: #4d9e38;
+            transform: scale(0.98);
+        }
+
+        .empty-cart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .empty-cart i {
+            font-size: 4rem;
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        .empty-cart p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        .continue-shopping {
+            background-color: var(--primary-orange);
+            color: var(--white);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            -webkit-appearance: none;
+            min-height: 44px;
+        }
+
+        /* Order Form */
+        .order-form-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--overlay-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            padding: 20px;
+        }
+
+        .order-form-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .order-form {
+            background-color: var(--white);
+            width: 100%;
+            max-width: 500px;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--dark-blue);
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px; /* Prevent zoom on iOS */
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .order-type-container {
+            display: flex;
+            gap: 15px;
+        }
+
+        .order-type-option {
+            flex: 1;
+            text-align: center;
+        }
+
+        .order-type-option input {
+            display: none;
+        }
+
+        .order-type-label {
+            display: block;
+            padding: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            -webkit-appearance: none;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .order-type-option input:checked + .order-type-label {
+            background-color: var(--primary-orange);
+            color: var(--white);
+            border-color: var(--primary-orange);
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .cancel-btn, .submit-btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            -webkit-appearance: none;
+            min-height: 44px;
+        }
+
+        .cancel-btn {
+            background-color: var(--light-gray);
+            color: var(--text-dark);
+            border: 1px solid var(--border-color);
+        }
+
+        .cancel-btn:active {
+            background-color: #e0e0e0;
+        }
+
+        .submit-btn {
+            background-color: var(--success);
+            color: var(--white);
+            border: none;
+        }
+
+        .submit-btn:active {
+            background-color: #4d9e38;
+            transform: scale(0.98);
+        }
+
+        /* Back Navigation */
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--dark-blue);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 15px;
+            padding: 8px;
+            min-height: 44px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark-blue);
+            color: var(--white);
+            padding: 40px 5% 20px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 30px;
+        }
+
+        .footer-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--white);
+        }
+
+        .footer-section p, .footer-section a {
+            color: #c2c2c2;
+            margin-bottom: 10px;
+            display: block;
+            text-decoration: none;
+        }
+
+        .footer-section a:active {
+            color: var(--primary-orange);
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .social-icons a {
+            font-size: 1.5rem;
+            padding: 8px;
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #c2c2c2;
+            font-size: 0.9rem;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark-blue);
+            cursor: pointer;
+            padding: 8px;
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        /* Responsive Styles */
+        @media (min-width: 768px) {
+            .menu-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .footer-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .cart-item {
+                padding: 20px;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .menu-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .mobile-menu-btn {
+                display: none;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .header-container {
+                padding: 10px 5%;
+            }
+            
+            .hero {
+                height: 40vh;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .search-nav-container {
+                position: fixed;
+                top: 0;
+                left: -100%;
+                width: 85%;
+                height: 100vh;
+                background-color: var(--white);
+                z-index: 1000;
+                transition: left 0.3s ease;
+                padding: 20px;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .search-nav-container.active {
+                left: 0;
+            }
+            
+            .categories {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .category {
+                flex-direction: row;
+                gap: 10px;
+                min-width: auto;
+                padding: 10px;
+                border-radius: 8px;
+            }
+            
+            .category.active {
+                background-color: rgba(252, 128, 25, 0.1);
+                border-bottom: none;
+            }
+            
+            .category i {
+                margin-bottom: 0;
+            }
+            
+            .overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: var(--overlay-bg);
+                z-index: 999;
+                display: none;
+            }
+            
+            .overlay.active {
+                display: block;
+            }
+
+            .cart-item {
+                flex-direction: column;
+            }
+
+            .cart-item-image {
+                width: 100%;
+                height: 150px;
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+
+            .order-form {
+                padding: 20px;
+            }
+        }
+
+        /* iOS Specific Styles */
+        @supports (-webkit-touch-callout: none) {
+            .hero {
+                height: 50vh;
+            }
+            
+            .search-input, .form-input, .form-textarea {
+                font-size: 16px; /* Prevent zoom on focus */
+            }
+        }
+
+        /* Android Specific Styles */
+        @supports not (-webkit-touch-callout: none) {
+            .cart-fullscreen {
+                transition: transform 0.3s ease;
+            }
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-utensils"></i>
+                <span>Flavorsome</span>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="cart-icon" id="cartIcon">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count">0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search & Navigation -->
+    <div class="overlay"></div>
+    <div class="search-nav-container">
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Search for dishes...">
+            <button class="search-button">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+        <div class="categories">
+            <div class="category active" data-category="all">
+                <i class="fas fa-home"></i>
+                <span>All</span>
+            </div>
+            <div class="category" data-category="veg-starters">
+                <i class="fas fa-leaf"></i>
+                <span>Veg Starters</span>
+            </div>
+            <div class="category" data-category="salads">
+                <i class="fas fa-seedling"></i>
+                <span>Salads</span>
+            </div>
+            <div class="category" data-category="veg-soups">
+                <i class="fas fa-spoon"></i>
+                <span>Veg Soups</span>
+            </div>
+            <div class="category" data-category="nonveg-soups">
+                <i class="fas fa-drumstick-bite"></i>
+                <span>Non-Veg Soups</span>
+            </div>
+            <div class="category" data-category="fast-food">
+                <i class="fas fa-hamburger"></i>
+                <span>Fast Food</span>
+            </div>
+            <div class="category" data-category="main-course">
+                <i class="fas fa-utensils"></i>
+                <span>Main Course</span>
+            </div>
+            <div class="category" data-category="desserts">
+                <i class="fas fa-ice-cream"></i>
+                <span>Dessert</span>
+            </div>
+            <div class="category" data-category="drinks">
+                <i class="fas fa-glass-martini"></i>
+                <span>Drinks</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Banner -->
+    <section class="hero">
+        <h1>Delicious Food Delivered To You</h1>
+        <p>Order your favorite meals from our extensive menu and enjoy restaurant-quality food at home</p>
+    </section>
+
+    <!-- Menu Section -->
+    <section class="menu-container">
+        <h2 class="section-title">Our Menu</h2>
+        <div class="menu-grid" id="menuGrid">
+            <!-- Menu items will be dynamically added here -->
+        </div>
+    </section>
+
+    <!-- Full Screen Cart -->
+    <div class="cart-fullscreen" id="cartFullscreen">
+        <div class="cart-header">
+            <h3 class="cart-title">Your Order</h3>
+            <button class="close-cart">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="cart-content">
+            <div class="cart-items-container" id="cartItems">
+                <!-- Cart items will be dynamically added here -->
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span id="cartTotal">₹0</span>
+                </div>
+                <button class="place-order-btn" id="placeOrderBtn">Place Order</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Form -->
+    <div class="order-form-overlay" id="orderFormOverlay">
+        <div class="order-form">
+            <button class="back-btn" id="backToCartBtn">
+                <i class="fas fa-arrow-left"></i> Back to Cart
+            </button>
+            <h3 class="form-title">Complete Your Order</h3>
+            <form id="orderForm">
+                <div class="form-group">
+                    <label class="form-label" for="customerName">Your Name *</label>
+                    <input type="text" class="form-input" id="customerName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="tableNumber">Table Number *</label>
+                    <input type="text" class="form-input" id="tableNumber" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Order Type</label>
+                    <div class="order-type-container">
+                        <div class="order-type-option">
+                            <input type="radio" id="dineIn" name="orderType" value="Dine In" checked>
+                            <label class="order-type-label" for="dineIn">Dine In</label>
+                        </div>
+                        <div class="order-type-option">
+                            <input type="radio" id="takeAway" name="orderType" value="Take Away">
+                            <label class="order-type-label" for="takeAway">Take Away</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="specialInstructions">Special Instructions</label>
+                    <textarea class="form-textarea" id="specialInstructions" placeholder="Any special requests or dietary restrictions?"></textarea>
+                </div>
+                <div class="form-buttons">
+                    <button type="button" class="cancel-btn" id="cancelOrderBtn">Cancel</button>
+                    <button type="submit" class="submit-btn">Send via WhatsApp</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Flavorsome</h3>
+                <p>Delivering delicious meals straight to your table. Experience the taste of perfection with our carefully crafted dishes.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p><i class="fas fa-map-marker-alt"></i> 123 Food Street, Mumbai, India</p>
+                <p><i class="fas fa-phone"></i> +91 98765 43210</p>
+                <p><i class="fas fa-envelope"></i> info@flavorsome.com</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="#">About Us</a>
+                <a href="#">Menu</a>
+                <a href="#">Terms & Conditions</a>
+                <a href="#">Privacy Policy</a>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2023 Flavorsome. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Menu Data - Replace these image paths with your own JPG images
+        const menuItems = [
+            // Veg Starters
+            {
+                id: 1,
+                name: "Paneer Tikka",
+                description: "Succulent cubes of paneer marinated in spices and grilled to perfection",
+                price: 280,
+                category: "veg-starters",
+                image: "images/paneer-tikka.jpg" // Replace with your image path
+            },
+            {
+                id: 2,
+                name: "Veg Spring Rolls",
+                description: "Crispy rolls filled with fresh vegetables and served with dipping sauce",
+                price: 220,
+                category: "veg-starters",
+                image: "images/spring-rolls.jpg" // Replace with your image path
+            },
+            {
+                id: 3,
+                name: "Hara Bhara Kabab",
+                description: "Green vegetable patties made with spinach, peas and spices",
+                price: 240,
+                category: "veg-starters",
+                image: "images/hara-bhara-kabab.jpg" // Replace with your image path
+            },
+            
+            // Salads
+            {
+                id: 4,
+                name: "Garden Fresh Salad",
+                description: "A mix of fresh lettuce, tomatoes, cucumbers, and olives with vinaigrette",
+                price: 180,
+                category: "salads",
+                image: "images/garden-salad.jpg" // Replace with your image path
+            },
+            {
+                id: 5,
+                name: "Caesar Salad",
+                description: "Crisp romaine lettuce with parmesan cheese, croutons and Caesar dressing",
+                price: 220,
+                category: "salads",
+                image: "images/caesar-salad.jpg" // Replace with your image path
+            },
+            
+            // Veg Soups
+            {
+                id: 6,
+                name: "Tomato Basil Soup",
+                description: "Creamy tomato soup infused with fresh basil and herbs",
+                price: 150,
+                category: "veg-soups",
+                image: "images/tomato-soup.jpg" // Replace with your image path
+            },
+            {
+                id: 7,
+                name: "Hot & Sour Soup",
+                description: "A tantalizing blend of spicy and tangy flavors with fresh vegetables",
+                price: 160,
+                category: "veg-soups",
+                image: "images/hot-sour-soup.jpg" // Replace with your image path
+            },
+            
+            // Non-Veg Soups
+            {
+                id: 8,
+                name: "Chicken Noodle Soup",
+                description: "Hearty soup with tender chicken pieces and noodles in a flavorful broth",
+                price: 200,
+                category: "nonveg-soups",
+                image: "images/chicken-noodle-soup.jpg" // Replace with your image path
+            },
+            
+            // Fast Food
+            {
+                id: 9,
+                name: "Cheese Burger",
+                description: "Juicy beef patty with melted cheese, fresh lettuce and special sauce",
+                price: 180,
+                category: "fast-food",
+                image: "images/cheese-burger.jpg" // Replace with your image path
+            },
+            {
+                id: 10,
+                name: "Margherita Pizza",
+                description: "Classic pizza with tomato sauce, fresh mozzarella and basil leaves",
+                price: 320,
+                category: "fast-food",
+                image: "images/margherita-pizza.jpg" // Replace with your image path
+            },
+            {
+                id: 11,
+                name: "French Fries",
+                description: "Crispy golden fries served with ketchup and mayonnaise",
+                price: 120,
+                category: "fast-food",
+                image: "images/french-fries.jpg" // Replace with your image path
+            },
+            
+            // Main Course
+            {
+                id: 12,
+                name: "Butter Chicken",
+                description: "Tender chicken in a rich, creamy tomato and butter sauce",
+                price: 380,
+                category: "main-course",
+                image: "images/butter-chicken.jpg" // Replace with your image path
+            },
+            {
+                id: 13,
+                name: "Paneer Butter Masala",
+                description: "Soft paneer cubes in a creamy, mildly spiced tomato gravy",
+                price: 320,
+                category: "main-course",
+                image: "images/paneer-butter-masala.jpg" // Replace with your image path
+            },
+            {
+                id: 14,
+                name: "Biryani",
+                description: "Fragrant basmati rice cooked with aromatic spices and vegetables",
+                price: 280,
+                category: "main-course",
+                image: "images/biryani.jpg" // Replace with your image path
+            },
+            
+            // Desserts
+            {
+                id: 15,
+                name: "Chocolate Brownie",
+                description: "Rich, fudgy chocolate brownie served with vanilla ice cream",
+                price: 180,
+                category: "desserts",
+                image: "images/chocolate-brownie.jpg" // Replace with your image path
+            },
+            {
+                id: 16,
+                name: "Gulab Jamun",
+                description: "Soft, syrup-soaked milk dumplings, a classic Indian dessert",
+                price: 120,
+                category: "desserts",
+                image: "images/gulab-jamun.jpg" // Replace with your image path
+            },
+            
+            // Drinks
+            {
+                id: 17,
+                name: "Fresh Lime Soda",
+                description: "Refreshing lime soda with a hint of salt and sugar",
+                price: 80,
+                category: "drinks",
+                image: "images/lime-soda.jpg" // Replace with your image path
+            },
+            {
+                id: 18,
+                name: "Mango Lassi",
+                description: "Creamy yogurt drink blended with ripe mangoes",
+                price: 120,
+                category: "drinks",
+                image: "images/mango-lassi.jpg" // Replace with your image path
+            }
+        ];
+
+        // DOM Elements
+        const menuGrid = document.getElementById('menuGrid');
+        const cartIcon = document.getElementById('cartIcon');
+        const cartCount = document.querySelector('.cart-count');
+        const cartFullscreen = document.getElementById('cartFullscreen');
+        const closeCart = document.querySelector('.close-cart');
+        const cartItems = document.getElementById('cartItems');
+        const cartTotal = document.getElementById('cartTotal');
+        const placeOrderBtn = document.getElementById('placeOrderBtn');
+        const orderFormOverlay = document.getElementById('orderFormOverlay');
+        const orderForm = document.getElementById('orderForm');
+        const cancelOrderBtn = document.getElementById('cancelOrderBtn');
+        const backToCartBtn = document.getElementById('backToCartBtn');
+        const categories = document.querySelectorAll('.category');
+        const searchInput = document.querySelector('.search-input');
+        const searchButton = document.querySelector('.search-button');
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const searchNavContainer = document.querySelector('.search-nav-container');
+        const overlay = document.querySelector('.overlay');
+
+        // App State
+        let cart = [];
+        let currentView = 'menu'; // 'menu', 'cart', 'order-form'
+
+        // Initialize the application
+        function init() {
+            renderMenuItems();
+            setupEventListeners();
+            updateCartCount();
+            setupNavigation();
+        }
+
+        // Setup browser navigation
+        function setupNavigation() {
+            // Handle browser back button
+            window.addEventListener('popstate', function(event) {
+                navigateBack();
+            });
+        }
+
+        // Navigate back using browser back button
+        function navigateBack() {
+            switch(currentView) {
+                case 'cart':
+                    hideCart();
+                    currentView = 'menu';
+                    break;
+                case 'order-form':
+                    hideOrderForm();
+                    currentView = 'cart';
+                    break;
+                default:
+                    currentView = 'menu';
+            }
+        }
+
+        // Render menu items
+        function renderMenuItems(filteredItems = menuItems) {
+            menuGrid.innerHTML = '';
+            
+            filteredItems.forEach(item => {
+                const menuItemElement = document.createElement('div');
+                menuItemElement.className = 'menu-item';
+                menuItemElement.dataset.category = item.category;
+                
+                menuItemElement.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}" class="item-image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOGY4Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY4NmI3OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkFkZCBZb3VyIEltYWdlIEhlcmU8L3RleHQ+PC9zdmc+'">
+                    <div class="item-details">
+                        <h3 class="item-name">${item.name}</h3>
+                        <p class="item-description">${item.description}</p>
+                        <div class="item-footer">
+                            <span class="item-price">₹${item.price}</span>
+                            <button class="add-to-cart" data-id="${item.id}">Add to Cart</button>
+                        </div>
+                    </div>
+                `;
+                
+                menuGrid.appendChild(menuItemElement);
+            });
+            
+            // Add event listeners to Add to Cart buttons
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', addToCart);
+                button.addEventListener('touchstart', function(e) {
+                    this.style.transform = 'scale(0.98)';
+                });
+                button.addEventListener('touchend', function(e) {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Cart functionality
+            cartIcon.addEventListener('click', showCart);
+            cartIcon.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.9)';
+            });
+            cartIcon.addEventListener('touchend', function() {
+                this.style.transform = 'scale(1)';
+            });
+            
+            closeCart.addEventListener('click', hideCart);
+            placeOrderBtn.addEventListener('click', showOrderForm);
+            cancelOrderBtn.addEventListener('click', hideOrderForm);
+            backToCartBtn.addEventListener('click', backToCart);
+            
+            // Order form submission
+            orderForm.addEventListener('submit', submitOrder);
+            
+            // Category filtering
+            categories.forEach(category => {
+                category.addEventListener('click', filterByCategory);
+                category.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(0.95)';
+                });
+                category.addEventListener('touchend', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+            
+            // Search functionality
+            searchButton.addEventListener('click', performSearch);
+            searchInput.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+            
+            // Mobile menu
+            mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+            overlay.addEventListener('click', toggleMobileMenu);
+        }
+
+        // Show cart
+        function showCart() {
+            cartFullscreen.classList.add('active');
+            currentView = 'cart';
+            renderCartItems();
+            
+            // Add to browser history
+            history.pushState({view: 'cart'}, '', '#cart');
+            
+            // Only prevent body scroll when cart is open
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Hide cart
+        function hideCart() {
+            cartFullscreen.classList.remove('active');
+            currentView = 'menu';
+            
+            // Always restore body scroll when cart is closed
+            document.body.style.overflow = '';
+        }
+
+        // Add item to cart
+        function addToCart(e) {
+            const itemId = parseInt(e.target.dataset.id);
+            const item = menuItems.find(menuItem => menuItem.id === itemId);
+            
+            const existingItem = cart.find(cartItem => cartItem.id === itemId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    ...item,
+                    quantity: 1
+                });
+            }
+            
+            updateCartCount();
+            showAddedToCartMessage(item.name);
+        }
+
+        // Render cart items
+        function renderCartItems() {
+            cartItems.innerHTML = '';
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = `
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-cart"></i>
+                        <p>Your cart is empty</p>
+                        <button class="continue-shopping" onclick="hideCart()">Continue Shopping</button>
+                    </div>
+                `;
+                cartTotal.textContent = '₹0';
+                return;
+            }
+            
+            let total = 0;
+            
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                
+                const cartItemElement = document.createElement('div');
+                cartItemElement.className = 'cart-item';
+                
+                cartItemElement.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}" class="cart-item-image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOGY4Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMiIgZmlsbD0iIzY4NmI3OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlPC90ZXh0Pjwvc3ZnPg=='>
+                    <div class="cart-item-details">
+                        <h4 class="cart-item-name">${item.name}</h4>
+                        <p class="cart-item-price">₹${item.price}</p>
+                        <div class="cart-item-controls">
+                            <button class="quantity-btn decrease" data-id="${item.id}">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <span class="cart-item-quantity">${item.quantity}</span>
+                            <button class="quantity-btn increase" data-id="${item.id}">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <button class="remove-item" data-id="${item.id}">Remove</button>
+                        </div>
+                    </div>
+                `;
+                
+                cartItems.appendChild(cartItemElement);
+            });
+            
+            cartTotal.textContent = `₹${total}`;
+            
+            // Add event listeners to cart controls
+            document.querySelectorAll('.increase').forEach(button => {
+                button.addEventListener('click', increaseQuantity);
+            });
+            
+            document.querySelectorAll('.decrease').forEach(button => {
+                button.addEventListener('click', decreaseQuantity);
+            });
+            
+            document.querySelectorAll('.remove-item').forEach(button => {
+                button.addEventListener('click', removeItem);
+            });
+        }
+
+        // Update cart count
+        function updateCartCount() {
+            const count = cart.reduce((total, item) => total + item.quantity, 0);
+            cartCount.textContent = count;
+        }
+
+        // Increase item quantity
+        function increaseQuantity(e) {
+            const itemId = parseInt(e.target.closest('button').dataset.id);
+            const item = cart.find(cartItem => cartItem.id === itemId);
+            
+            if (item) {
+                item.quantity += 1;
+                renderCartItems();
+                updateCartCount();
+            }
+        }
+
+        // Decrease item quantity
+        function decreaseQuantity(e) {
+            const itemId = parseInt(e.target.closest('button').dataset.id);
+            const item = cart.find(cartItem => cartItem.id === itemId);
+            
+            if (item && item.quantity > 1) {
+                item.quantity -= 1;
+                renderCartItems();
+                updateCartCount();
+            }
+        }
+
+        // Remove item from cart
+        function removeItem(e) {
+            const itemId = parseInt(e.target.dataset.id);
+            cart = cart.filter(item => item.id !== itemId);
+            
+            renderCartItems();
+            updateCartCount();
+        }
+
+        // Show order form
+        function showOrderForm() {
+            if (cart.length === 0) {
+                alert('Your cart is empty. Please add items before placing an order.');
+                return;
+            }
+            
+            orderFormOverlay.classList.add('active');
+            currentView = 'order-form';
+            
+            // Add to browser history
+            history.pushState({view: 'order-form'}, '', '#order-form');
+            
+            // Only prevent body scroll when form is open
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Hide order form
+        function hideOrderForm() {
+            orderFormOverlay.classList.remove('active');
+            currentView = 'cart';
+            
+            // Always restore body scroll when form is closed
+            document.body.style.overflow = '';
+        }
+
+        // Back to cart from order form
+        function backToCart() {
+            hideOrderForm();
+            currentView = 'cart';
+            
+            // Update browser history
+            history.pushState({view: 'cart'}, '', '#cart');
+        }
+
+        // Submit order
+        function submitOrder(e) {
+            e.preventDefault();
+            
+            const customerName = document.getElementById('customerName').value;
+            const tableNumber = document.getElementById('tableNumber').value;
+            const orderType = document.querySelector('input[name="orderType"]:checked').value;
+            const specialInstructions = document.getElementById('specialInstructions').value;
+            
+            if (!customerName || !tableNumber) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            // Format order message for WhatsApp
+            let message = `New Order from Flavorsome%0A%0A`;
+            message += `Customer: ${customerName}%0A`;
+            message += `Table: ${tableNumber}%0A`;
+            message += `Order Type: ${orderType}%0A`;
+            
+            if (specialInstructions) {
+                message += `Special Instructions: ${specialInstructions}%0A`;
+            }
+            
+            message += `%0AOrder Details:%0A`;
+            
+            let total = 0;
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                message += `- ${item.name} (x${item.quantity}) - ₹${itemTotal}%0A`;
+            });
+            
+            message += `%0ATotal: ₹${total}`;
+            
+            // Open WhatsApp with the formatted message
+            const phoneNumber = "919876543210"; // Replace with restaurant's WhatsApp number
+            const whatsappURL = `https://wa.me/${phoneNumber}?text=${message}`;
+            
+            window.open(whatsappURL, '_blank');
+            
+            // Reset form and cart
+            orderForm.reset();
+            hideOrderForm();
+            cart = [];
+            updateCartCount();
+            renderCartItems();
+            hideCart();
+            
+            alert('Your order has been placed successfully!');
+            
+            // Reset browser history to menu
+            history.pushState({view: 'menu'}, '', window.location.pathname);
+            currentView = 'menu';
+        }
+
+        // Filter by category
+        function filterByCategory(e) {
+            const category = e.currentTarget.dataset.category;
+            
+            // Update active category
+            categories.forEach(cat => cat.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+            
+            // Filter menu items
+            if (category === 'all') {
+                renderMenuItems();
+            } else {
+                const filteredItems = menuItems.filter(item => item.category === category);
+                renderMenuItems(filteredItems);
+            }
+            
+            // Close mobile menu if open
+            if (window.innerWidth <= 767) {
+                toggleMobileMenu();
+            }
+        }
+
+        // Perform search
+        function performSearch() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            
+            if (searchTerm === '') {
+                renderMenuItems();
+                return;
+            }
+            
+            const filteredItems = menuItems.filter(item => 
+                item.name.toLowerCase().includes(searchTerm) || 
+                item.description.toLowerCase().includes(searchTerm)
+            );
+            
+            renderMenuItems(filteredItems);
+        }
+
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            searchNavContainer.classList.toggle('active');
+            overlay.classList.toggle('active');
+            
+            if (searchNavContainer.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Show added to cart message
+        function showAddedToCartMessage(itemName) {
+            // Create a temporary notification
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: var(--success);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                z-index: 1000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                transition: all 0.3s ease;
+                font-weight: 600;
+            `;
+            notification.textContent = `${itemName} added to cart!`;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 2 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(-50%) translateY(20px)';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 2000);
+        }
+
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>
